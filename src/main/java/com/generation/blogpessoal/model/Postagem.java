@@ -1,6 +1,6 @@
 package com.generation.blogpessoal.model;
 
-import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
@@ -14,7 +14,7 @@ import javax.validation.constraints.Size;
 import org.hibernate.annotations.UpdateTimestamp;
 
 @Entity 
-@Table(name = "tb_postagens") // CTREATE TABLE tb_postagens
+@Table(name = "tb_postagens") // CREATE TABLE tb_postagens
 public class Postagem {
 	
 	@Id
@@ -30,7 +30,7 @@ public class Postagem {
 	private String texto;
 	
 	@UpdateTimestamp
-	private LocalDate data;
+	private LocalDateTime data;
 
 	public Long getId() {
 		return id;
@@ -56,11 +56,11 @@ public class Postagem {
 		this.texto = texto;
 	}
 
-	public LocalDate getData() {
+	public LocalDateTime getData() {
 		return data;
 	}
 
-	public void setData(LocalDate data) {
+	public void setData(LocalDateTime data) {
 		this.data = data;
 	}
 	
