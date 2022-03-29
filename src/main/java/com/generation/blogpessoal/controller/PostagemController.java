@@ -19,6 +19,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.generation.blogpessoal.model.Postagem;
 import com.generation.blogpessoal.repository.PostagemRepository;
+import com.generation.blogpessoal.repository.TemaRepository;
 
 @RestController
 @RequestMapping("/postagens")
@@ -27,6 +28,9 @@ public class PostagemController {
 	
 	@Autowired //uma injeção que só funciona nessa classe
 	private PostagemRepository postagemRepository;
+	
+	@Autowired
+	private TemaRepository temaRepository;
 	
 	@GetMapping
 	public ResponseEntity <List<Postagem>> getAll() {
@@ -54,17 +58,27 @@ public class PostagemController {
 		
 		@PostMapping
 		public ResponseEntity<Postagem> postPostagem(@Valid @RequestBody Postagem postagem) {
-			return ResponseEntity.status(HttpStatus.CREATED).body(postagemRepository.save(postagem));
+			if (temaRepository.existsById(postagem.getTema().getId()))
+				return ResponseEntity.status(HttpStatus.CREATED).body(postagemRepository.save(postagem));
+		
+			return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
+		}
 			
 			//vai receber um JSON vai transformar em um objeto do tipo postagem e vai salvar na tabela
-		}
 		
 		@PutMapping
 		public ResponseEntity<Postagem> putPostagem(@Valid @RequestBody Postagem postagem) {
-			return postagemRepository.findById(postagem.getId())
-					.map(resposta -> ResponseEntity.ok().body(postagemRepository.save(postagem)))
-					.orElse(ResponseEntity.notFound().build());
-	
+			if (postagemRepository.existsById(postagem.getId())){
+				
+				if (temaRepository.existsById(postagem.getTema().getId()))
+					return ResponseEntity.status(HttpStatus.OK)
+							.body(postagemRepository.save(postagem));
+				
+				return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
+				
+			}			
+				
+			return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
 		}
 		
 		@DeleteMapping("/{id}")
@@ -76,9 +90,8 @@ public class PostagemController {
 						return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
 					})
 					.orElse(ResponseEntity.notFound().build());
-			
+		}
 			//chegar se o id existe
 			//ele é void pq não devolve nada
-		}
 
 }
